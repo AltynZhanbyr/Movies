@@ -46,7 +46,7 @@ class DetailsFragment : Fragment() {
         }
     }
 
-    private fun initValues(id:Int, viewModel: MoviesViewModel) {
+    private fun initValues(id:Long, viewModel: MoviesViewModel) {
         viewModel.getMovieById(id)
         viewModel.movie.observe(viewLifecycleOwner){movie->
             if(movie!=null){

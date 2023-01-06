@@ -13,7 +13,7 @@ interface RetrofitService {
     suspend fun getPopularMovies():Response<Movies>
 
     @GET("3/movie/{movie_id}?api_key=fbb6f0305c907e9c4a4646bf672cf6cd&language=en-US")
-    suspend fun getMovieById(@Path("movie_id") id:Int):Response<MovieDetails>
+    suspend fun getMovieById(@Path("movie_id") id:Long):Response<MovieDetails>
 
     companion object{
         var BASE_URL = "https://api.themoviedb.org/"

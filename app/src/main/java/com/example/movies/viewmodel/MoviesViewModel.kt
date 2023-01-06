@@ -13,6 +13,19 @@ import kotlinx.coroutines.launch
 class MoviesViewModel(private val retrofitService: RetrofitService):ViewModel() {
     val movies = MutableLiveData<List<MovieModel>>()
 
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            val response = retrofitService.getPopularMovies()
+            if(response.isSuccessful) {
+                movies.postValue(response.body()!!.results)
+                isSuccessful.postValue(true)
+            }
+            else
+                isSuccessful.postValue(false)
+        }
+    }
+
+
     val isSuccessful = MutableLiveData(false)
 
     fun getPopularMovies(){

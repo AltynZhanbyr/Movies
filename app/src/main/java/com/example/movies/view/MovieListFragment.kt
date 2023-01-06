@@ -9,15 +9,18 @@ import android.widget.Adapter
 import androidx.core.view.isVisible
 import androidx.lifecycle.GeneratedAdapter
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.example.movies.R
 import com.example.movies.databinding.FragmentMovieListBinding
+import com.example.movies.model.modelclass.MovieModel
 import com.example.movies.model.retrofit.RetrofitService
 import com.example.movies.view.adapter.MoviesAdapter
 import com.example.movies.viewmodel.MoviesViewModel
 import com.example.movies.viewmodel.ViewModelFactory
 import com.google.android.material.snackbar.Snackbar
 
-class MovieListFragment : Fragment() {
+class MovieListFragment : Fragment(),MoviesAdapter.OnMovieClickListener {
 
     private lateinit var binding: FragmentMovieListBinding
     private lateinit var adapter: MoviesAdapter
@@ -40,23 +43,25 @@ class MovieListFragment : Fragment() {
 
         val activity = requireNotNull(activity)
 
+        adapter = MoviesAdapter(activity,this)
+
         movieViewModel.movies.observe(viewLifecycleOwner){
             if(it!=null){
-               adapter = MoviesAdapter(it,activity)
+               adapter.submitList(it)
                binding.movieList.adapter = adapter
                adapter.notifyDataSetChanged()
             }
         }
 
         movieViewModel.isSuccessful.observe(viewLifecycleOwner){success->
-            val message = if(success)
-                "Movies got successfully"
-            else
-                "Something went wrong"
-            Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
             binding.progressCircular.isVisible = !success
         }
 
-        movieViewModel.getPopularMovies()
+       // movieViewModel.getPopularMovies()
+    }
+
+    override fun onMovieClickListener(movie: MovieModel) {
+        val action = MovieListFragmentDirections.actionMovieListFragmentToDetailsFragment(movie.id)
+        findNavController().navigate(action)
     }
 }

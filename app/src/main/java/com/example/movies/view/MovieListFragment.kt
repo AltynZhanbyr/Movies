@@ -1,11 +1,17 @@
 package com.example.movies.view
 
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Adapter
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.isVisible
 import androidx.lifecycle.GeneratedAdapter
 import androidx.lifecycle.ViewModelProvider
@@ -36,6 +42,19 @@ class MovieListFragment : Fragment(),MoviesAdapter.OnMovieClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val networkConnection = NetworkConnection(requireNotNull(context).applicationContext)
+
+        networkConnection.observe(viewLifecycleOwner){
+            if(it)
+                onInternetConnected()
+            else
+                binding.progressCircular.isVisible = true
+        }
+
+       // movieViewModel.getPopularMovies()
+    }
+
+    private fun onInternetConnected(){
         val retrofitService = RetrofitService.getInstance()
 
         val viewModelFactory = ViewModelFactory(retrofitService)
@@ -47,17 +66,15 @@ class MovieListFragment : Fragment(),MoviesAdapter.OnMovieClickListener {
 
         movieViewModel.movies.observe(viewLifecycleOwner){
             if(it!=null){
-               adapter.submitList(it)
-               binding.movieList.adapter = adapter
-               adapter.notifyDataSetChanged()
+                adapter.submitList(it)
+                binding.movieList.adapter = adapter
+                adapter.notifyDataSetChanged()
             }
         }
 
         movieViewModel.isSuccessful.observe(viewLifecycleOwner){success->
             binding.progressCircular.isVisible = !success
         }
-
-       // movieViewModel.getPopularMovies()
     }
 
     override fun onMovieClickListener(movie: MovieModel) {

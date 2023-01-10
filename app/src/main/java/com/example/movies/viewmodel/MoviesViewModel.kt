@@ -31,13 +31,17 @@ class MoviesViewModel(private val retrofitService: RetrofitService):ViewModel() 
 
     val isSuccessful = MutableLiveData(false)
 
-   fun getMovieById(id:Long){
-       viewModelScope.launch{
-           val response = retrofitService.getMovieById(id)
-           if(response.isSuccessful) {
-               movie.postValue(response.body()!!)
-               isSuccessful.postValue(true)
-           }
-       }
-   }
+    fun getMovieTrailer(id:Long){
+
+    }
+
+    fun getMovieById(id:Long){
+        viewModelScope.launch{
+            val response = retrofitService.getMovieById(id)
+            if(response.isSuccessful) {
+                movie.postValue(response.body()!!)
+                isSuccessful.postValue(true)
+            }
+        }
+    }
 }

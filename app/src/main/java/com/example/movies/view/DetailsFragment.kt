@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.MediaController
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
@@ -31,6 +32,15 @@ class DetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        var networkConnection = NetworkConnection(requireNotNull(context).applicationContext)
+        networkConnection.observe(viewLifecycleOwner){
+            if(it)
+                onInternetConnected()
+            else
+                binding.detailsProgressBar.isVisible=true
+        }
+    }
+    private fun onInternetConnected(){
         val retrofitService = RetrofitService.getInstance()
 
         val viewModelFactory = ViewModelFactory(retrofitService)
@@ -56,6 +66,13 @@ class DetailsFragment : Fragment() {
                     it.movieReleaseDate.text = movie.release_date
                     it.movieVoteAverage.text = movie.vote_average.toString()
                     it.movieRuntime.text = movie.runtime.toString()
+                    var genres = ""
+                    for ((i, genre) in movie.genres.withIndex()) {
+                        genres+=genre.name
+                        if(i!=movie.genres.size-1)
+                            genres+=", "
+                    }
+                    it.movieGenre.text = genres
                     Glide
                         .with(requireNotNull(activity))
                         .load("https://image.tmdb.org/t/p/w500/" + movie.poster_path)
